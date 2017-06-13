@@ -2,14 +2,42 @@
   <h1>My artwork</h1>
   <div class="row">
     <div class="col-xs-12">
-      <div class="artwork" style="background-image: url(<%= image_path( 'jungle.jpg' ) %>)">
-        <%= image_tag 'jungle.jpg', style: "visibility: hidden"%>
-        <% @pins.each do |pin| %>
-          <div class="artwork-pin" style="left:<%= pin.left %>%; top:<%= pin.top %>%;">
-            <span><%= pin.numero %></span>
-          </div>
 
-        <% end %>
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        Launch demo modal
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+              <div class="modal-heading">
+
+                <div class="artwork-container">
+                  <%= image_tag 'jungle.jpg', width: 500, height: 300, class: "artwork" %>
+                  <% @pins.each do |pin| %>
+                    <div class="artwork-pin" style="left:<%= pin.left %>%; top:<%= pin.top %>%;">
+                      <span><%= pin.numero %></span>
+                    </div>
+
+                  <% end %>
+                </div>
+
+              </div>
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -32,12 +60,16 @@
     var y = event.pageY;
     var width = $(this).width();
     var height = $(this).height();
-    var left = Math.round(( (x - x0) / width ) * 100);
-    var top = Math.round(( (y - y0) / height ) * 100);
+    var left = Math.round(( (x - x0 - 17) / width ) * 100);
+    var top = Math.round(( (y - y0 - 17) / height ) * 100);
+    console.log(x0, y0, width, height)
+    console.log(x, y)
+    console.log(left, top)
+
 
     // Create a pin DIV and append it to the image
     var pin = $('<div class="artwork-pin" style="left:' + left + '%; top:'+ top + '%;"><span>' + numero + '</span></div>').hide();
-    $(this).append(pin)
+    $(this).parent().append(pin)
     pin.fadeIn();
 
     // Save It In DB
