@@ -1,2 +1,51 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<div class="container">
+  <h1>My artwork</h1>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="artwork" style="background-image: url(<%= image_path( 'jungle.jpg' ) %>)">
+        <%= image_tag 'jungle.jpg', style: "visibility: hidden"%>
+        <% @pins.each do |pin| %>
+          <div class="artwork-pin" style="left:<%= pin.left %>%; top:<%= pin.top %>%;">
+            <span><%= pin.numero %></span>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= content_for(:after_js) do %>
+<script>
+  var numero = parseInt("<%= @pins.last.numero %>");
+  $('.artwork').click(function(event){
+    numero += 1;
+
+    // Handle Coordinates
+    // (x, y) => coordinates relative to the page, (0, 0) is the top left corner
+    // (top, left) => cooridnates of the image expressed in % from the top left corner of the image
+    // Improvement deal with responsive issue by getting the actual size of the image from the image
+    var boundingRect = this.getBoundingClientRect();
+    var x0 = boundingRect.left
+    var y0 = boundingRect.top
+    var x = event.pageX;
+    var y = event.pageY;
+    var width = $(this).width();
+    var height = $(this).height();
+    var left = Math.round(( (x - x0) / width ) * 100);
+    var top = Math.round(( (y - y0) / height ) * 100);
+
+    // Create a pin DIV and append it to the image
+    var pin = $('<div class="artwork-pin" style="left:' + left + '%; top:'+ top + '%;"><span>' + numero + '</span></div>').hide();
+    $(this).append(pin)
+    pin.fadeIn();
+
+    // Save It In DB
+    $.post({
+      type: "POST",
+      url: "<%= pins_path %>",
+      data: { pin: {left: left, top: top, numero: numero }}
+    });
+  })
+</script>
+<% end %>
